@@ -127,7 +127,7 @@ engine.load("player.rules")
 
 # License
 
-LGPL-3.0-or-later
+LGPL-3.0
 
 ---
 
