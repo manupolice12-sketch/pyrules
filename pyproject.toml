@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyrules"
+version = "0.1.0"
+description = "A lightweight gameplay scripting language and runtime for Python games."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "LGPL-3.0-or-later" }
+
+authors = [
+    { name = "Aman Ashik" }
+]
+
+keywords = [
+    "pygame",
+    "pygame-ce",
+    "game-engine",
+    "scripting-language",
+    "rules-engine",
+    "dsl",
+    "game-development"
+]
+
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Games/Entertainment",
+    "Topic :: Software Development :: Compilers",
+    "Topic :: Software Development :: Interpreters",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Operating System :: OS Independent"
+]
+
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/yourname/pyrules"
+Repository = "https://github.com/yourname/pyrules"
+Issues = "https://github.com/yourname/pyrules/issues"
+
+[tool.setuptools]
+packages = ["pyrules"]
