@@ -35,6 +35,7 @@ def main():
 
     with open(output_path, 'w') as f:
         json.dump(compiled_data, f, indent=4)
+        print(f"Compiled '{input_path}' to '{output_path}' successfully.")
 
 if __name__ == "__main__":
     main()
