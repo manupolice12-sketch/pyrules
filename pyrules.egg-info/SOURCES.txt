@@ -1,7 +1,0 @@
-LICENCE.txt
-README.md
-pyproject.toml
-pyrules.egg-info/PKG-INFO
-pyrules.egg-info/SOURCES.txt
-pyrules.egg-info/dependency_links.txt
-pyrules.egg-info/top_level.txt
