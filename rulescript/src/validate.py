@@ -48,10 +48,8 @@ class Validator:
 
     def report(self):
         if self.errors:
-            print("\n--- COMPILATION ERRORS ---")
             for err in self.errors:
-                print(f"[!] {err}")
-            print("--------------------------\n")
+                raise Exception(f"[!] {err}")
             sys.exit(1)
         else:
             sys.exit(0)    
