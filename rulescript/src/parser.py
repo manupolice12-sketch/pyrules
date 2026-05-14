@@ -65,38 +65,36 @@ class Parser:
             }
         return str(node)
 
-    def parse_logic_block(self, stop_tokens):
-        content = []
-        while self.current_token() and self.current_token().type not in stop_tokens:
-            content.append(str(self.current_token().value))
-            self.advance()
-
-        raw_string = " ".join(content).strip()
+    def parse_expr(self, raw):
         try:
-            mode = 'exec' if re.search(r'(?<!=)=(?!=)', raw_string) else 'eval'
-            tree = ast.parse(raw_string, mode=mode)
+            mode = 'exec' if re.search(r'(?<!=)=(?!=)', raw) else 'eval'
+            tree = ast.parse(raw.strip(), mode=mode)
             return self.ast_to_dict(tree)
         except Exception:
-            return {"type": "raw", "value": raw_string}
+            return {"type": "raw", "value": raw}
 
     def parse_rule(self):
         rule_data = {"name": "", "condition": {}, "action": {}}
 
-        if self.current_token() and self.current_token().type == "RULE":
+        self.advance()
+        if self.current_token() and self.current_token().type == "EXPR":
+            rule_data["name"] = self.current_token().value.rstrip(":")
             self.advance()
-            if self.current_token() and self.current_token().type == "IDENTIFIER":
-                rule_data["name"] = self.current_token().value
-                self.advance()
 
-            while self.current_token() and self.current_token().type != "RULE":
-                if self.current_token().type == "WHEN":
+        while self.current_token() and self.current_token().type != "RULE":
+            tok = self.current_token()
+            if tok.type == "WHEN":
+                self.advance()
+                if self.current_token() and self.current_token().type == "EXPR":
+                    rule_data["condition"] = self.parse_expr(self.current_token().value)
                     self.advance()
-                    rule_data["condition"] = self.parse_logic_block(["THEN", "RULE"])
-                elif self.current_token().type == "THEN":
+            elif tok.type == "THEN":
+                self.advance()
+                if self.current_token() and self.current_token().type == "EXPR":
+                    rule_data["action"] = self.parse_expr(self.current_token().value)
                     self.advance()
-                    rule_data["action"] = self.parse_logic_block(["WHEN", "RULE"])
-                else:
-                    self.advance()
+            else:
+                self.advance()
 
         return rule_data
 
