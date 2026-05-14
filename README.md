@@ -55,7 +55,7 @@ AST
     ↓
 .pyr
     ↓
-Runtime / VM
+Runtime
 ```
 
 ---
@@ -136,7 +136,6 @@ LGPL-3.0
 - `.pyr` compiled format
 - syntax highlighting
 - VS Code extension
-- bytecode VM
 - hot reload support
 - debugger tooling
 - optional native runtime experimentation
