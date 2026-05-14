@@ -54,5 +54,4 @@ class Validator:
             print("--------------------------\n")
             sys.exit(1)
         else:
-            print("Validation successful! No errors found.")
             sys.exit(0)    
