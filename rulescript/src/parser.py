@@ -57,13 +57,11 @@ class Parser:
     def parse_logic_block(self, stop_tokens):
         content = []
         while self.current_token() and self.current_token().type not in stop_tokens:
-            content.append(self.current_token().value)
+            content.append(str(self.current_token().value))
             self.advance()
         
         raw_string = " ".join(content)
         try:
-            # Use mode='exec' for 'then' blocks as they contain assignments
-            # Use mode='eval' for 'when' blocks as they are expressions
             mode = 'exec' if '=' in raw_string else 'eval'
             tree = ast.parse(raw_string.strip(), mode=mode)
             return self.ast_to_dict(tree)
