@@ -1,5 +1,3 @@
-# rulescript/lexer.py
-
 KEYWORDS = {
     "rule": "RULE",
     "class": "CLASS",
