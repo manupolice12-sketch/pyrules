@@ -1,1 +1,1 @@
-from pyrules import RuleEngine
+from pyrules.src.pyrules import RuleEngine

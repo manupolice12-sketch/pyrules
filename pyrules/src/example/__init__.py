@@ -1,1 +1,1 @@
-from main import main
+from pyrules.src.example.main import main
