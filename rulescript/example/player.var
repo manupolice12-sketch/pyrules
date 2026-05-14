@@ -1,0 +1,4 @@
+{
+    "attributes": ["hp", "on_ground", "speed", "score"],
+    "methods": ["jump"]
+}

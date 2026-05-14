@@ -1,0 +1,4 @@
+{
+    "attributes": [],
+    "methods": ["distance", "attack"]
+}
