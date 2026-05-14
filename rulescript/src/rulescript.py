@@ -28,7 +28,6 @@ def main():
 
     compiled_data = {
         "format": "rsc",
-        "version": "1.0",
         "source": input_path,
         "rules": rules_data
     }
