@@ -15,7 +15,7 @@ def main():
     output_path = args.output if args.output else input_path.rsplit('.', 1)[0] + ".rsc"
 
     if not os.path.exists(input_path):
-        sys.exit(1)
+        raise FileNotFoundError(f"Input file '{input_path}' not found.")
 
     with open(input_path, 'r') as f:
         source_code = f.read()
