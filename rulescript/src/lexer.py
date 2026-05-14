@@ -1,32 +1,4 @@
-KEYWORDS = {
-    "rule": "RULE",
-    "class": "CLASS",
-    "func": "FUNC",
-    "when": "WHEN",
-    "then": "THEN",
-    "use": "USE",
-    "and": "AND",
-    "or": "OR",
-}
-
-OPERATORS = {
-    "==": "EQUALS",
-    ">": "GREATER_THAN",
-    "<": "LESS_THAN",
-    "=": "ASSIGN",
-    "+": "PLUS",
-    "-": "MINUS",
-    "*": "MULTIPLY",
-    "/": "DIVIDE",
-}
-
-SYMBOLS = {
-    ":": "COLON",
-    ".": "DOT",
-    "(": "LPAREN",
-    ")": "RPAREN",
-}
-
+KEYWORDS = {"rule", "when", "then", "use", "and", "or"}
 
 class Token:
     def __init__(self, type_, value):
@@ -40,28 +12,21 @@ class Token:
 class Lexer:
     def __init__(self, text):
         self.text = text
-        self.tokens = []
 
     def tokenize(self):
-        words = self.text.replace("(", " ( ") \
-                         .replace(")", " ) ") \
-                         .replace(":", " : ") \
-                         .replace(".", " . ") \
-                         .replace("==", " == ") \
-                         .replace(">=", " >= ") \
-                         .replace("<=", " <= ") \
-                         .split()
+        tokens = []
+        for line in self.text.splitlines():
+            stripped = line.strip()
+            if not stripped:
+                continue
 
-        for word in words:
+            word, _, rest = stripped.partition(" ")
+
             if word in KEYWORDS:
-                self.tokens.append(Token(KEYWORDS[word], word))
-            elif word in OPERATORS:
-                self.tokens.append(Token(OPERATORS[word], word))
-            elif word in SYMBOLS:
-                self.tokens.append(Token(SYMBOLS[word], word))
-            elif word.lstrip("-").isdigit():
-                self.tokens.append(Token("NUMBER", int(word)))
+                tokens.append(Token(word.upper(), word))
+                if rest:
+                    tokens.append(Token("EXPR", rest.strip()))
             else:
-                self.tokens.append(Token("IDENTIFIER", word))
+                tokens.append(Token("EXPR", stripped))
 
-        return self.tokens
+        return tokens
