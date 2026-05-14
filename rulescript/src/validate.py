@@ -1,55 +1,63 @@
 import os
 import json
-import sys
 
 class Validator:
     def __init__(self, rules_data, search_path="."):
         self.rules_data = rules_data
         self.search_path = search_path
         self.errors = []
+        self.cached_vars = {}
 
-    def check_var_exists(self, obj_name):
+    def get_var_metadata(self, obj_name):
+        if obj_name in self.cached_vars:
+            return self.cached_vars[obj_name]
+        
         var_file = os.path.join(self.search_path, f"{obj_name}.var")
         if not os.path.exists(var_file):
-            self.errors.append(f"MISSING_EXPORT: Object '{obj_name}' is used but no '{obj_name}.var' was found.")
+            self.errors.append(f"MISSING_EXPORT: Object '{obj_name}' has no .var file.")
             return None
         
         try:
             with open(var_file, 'r') as f:
-                return json.load(f)
-        except Exception:
-            self.errors.append(f"READ_ERROR: Could not read metadata for '{obj_name}.var'.")
+                data = json.load(f)
+                self.cached_vars[obj_name] = data
+                return data
+        except:
             return None
+
+    def walk_ast(self, node, rule_name):
+        if not isinstance(node, dict):
+            return
+
+        if node.get("type") == "attribute_access":
+            obj_node = node.get("object", {})
+            if obj_node.get("type") == "variable":
+                obj_name = obj_node.get("id")
+                prop_name = node.get("property")
+                
+                metadata = self.get_var_metadata(obj_name)
+                if metadata:
+                    valid_items = metadata.get("attributes", []) + metadata.get("methods", [])
+                    if prop_name not in valid_items:
+                        self.errors.append(f"UNDEFINED_PROPERTY: '{obj_name}.{prop_name}' in rule '{rule_name}'")
+
+        for key, value in node.items():
+            if isinstance(value, dict):
+                self.walk_ast(value, rule_name)
+            elif isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict):
+                        self.walk_ast(item, rule_name)
 
     def validate(self):
         for rule in self.rules_data:
-            rule_name = rule.get("name", "Unknown Rule")
-            full_logic = rule.get("condition", "") + " " + rule.get("action", "")
-            tokens = full_logic.split()
-
-            for i, token in enumerate(tokens):
-                if token == "." and 0 < i < len(tokens) - 1:
-                    obj_name = tokens[i-1]
-                    attr_name = tokens[i+1]
-
-                    metadata = self.check_var_exists(obj_name)
-                    if not metadata:
-                        continue
-
-                    valid_attrs = metadata.get("attributes", [])
-                    valid_methods = metadata.get("methods", [])
-                    clean_attr = attr_name.split('(')[0]
-
-                    if clean_attr not in valid_attrs and clean_attr not in valid_methods:
-                        self.errors.append(f"UNDEFINED_PROPERTY: In rule '{rule_name}', '{obj_name}.{clean_attr}' does not exist.")
-                        self.errors.append(f"    Available on '{obj_name}': {valid_attrs + valid_methods}")
-
+            name = rule.get("name", "Unknown")
+            self.walk_ast(rule.get("condition", {}), name)
+            self.walk_ast(rule.get("action", {}), name)
         return len(self.errors) == 0
 
     def report(self):
         if self.errors:
             for err in self.errors:
                 raise Exception(f"[!] {err}")
-            sys.exit(1)
-        else:
-            sys.exit(0)    
+            
