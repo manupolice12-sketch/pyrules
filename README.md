@@ -11,7 +11,7 @@ A lightweight gameplay scripting language and runtime for Python games.
 The project introduces:
 - `.rules` source files
 - a RuleScript-inspired syntax
-- a future `.pyr` compiled format
+- a future `.rsc` compiled format
 - runtime object bindings
 - gameplay-focused scripting
 
@@ -53,7 +53,7 @@ Parser
     ↓
 AST
     ↓
-.pyr
+.rsc
     ↓
 Runtime
 ```
@@ -133,7 +133,7 @@ LGPL-3.0
 
 # Future Plans
 
-- `.pyr` compiled format
+- `.rsc` compiled format
 - syntax highlighting
 - VS Code extension
 - hot reload support
