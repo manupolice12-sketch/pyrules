@@ -1,6 +1,6 @@
 import os
 import json
-from pyrules import RuleEngine
+from pyrules.src.pyrules import RuleEngine
 
 class Player:
     def __init__(self):
