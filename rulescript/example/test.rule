@@ -1,0 +1,23 @@
+use player
+use enemy
+use game
+
+rule low_health_jump:
+    when player.hp < 20 and player.on_ground
+    then:
+        player.jump()
+
+rule enemy_attack:
+    when enemy.distance(player) < 100
+    then:
+        enemy.attack(player)
+
+rule game_over:
+    when player.hp == 0
+    then:
+        game.end()
+
+rule score_bonus:
+    when player.score > 100
+    then:
+        player.speed = player.speed + 2
