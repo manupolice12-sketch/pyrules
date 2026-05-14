@@ -42,8 +42,7 @@ def main():
         try:
             json.dump(compiled_data, f, indent=4)
         except Exception as e:
-            print(f"Error occurred while writing to '{output_path}': {e}")
-            sys.exit(1)
+            raise IOError(f"Error occurred while writing to '{output_path}': {e}")
     print(f"Compiled '{input_path}' to '{output_path}' successfully.")
     sys.exit(0)
 
