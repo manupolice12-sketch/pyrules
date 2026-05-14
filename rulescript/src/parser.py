@@ -1,4 +1,5 @@
 import ast
+import re
 
 class Parser:
     def __init__(self, tokens):
@@ -12,10 +13,20 @@ class Parser:
         self.pos += 1
 
     def ast_to_dict(self, node):
-        if isinstance(node, (ast.Module, ast.Expression)):
+        if isinstance(node, ast.Module):
+            if node.body:
+                return self.ast_to_dict(node.body[0])
+            return {}
+        elif isinstance(node, ast.Expression):
             return self.ast_to_dict(node.body)
         elif isinstance(node, ast.Expr):
             return self.ast_to_dict(node.value)
+        elif isinstance(node, ast.BoolOp):
+            return {
+                "type": "bool_op",
+                "operator": type(node.op).__name__,
+                "values": [self.ast_to_dict(v) for v in node.values]
+            }
         elif isinstance(node, ast.BinOp):
             return {
                 "type": "binary_operation",
@@ -59,18 +70,18 @@ class Parser:
         while self.current_token() and self.current_token().type not in stop_tokens:
             content.append(str(self.current_token().value))
             self.advance()
-        
-        raw_string = " ".join(content)
+
+        raw_string = " ".join(content).strip()
         try:
-            mode = 'exec' if '=' in raw_string else 'eval'
-            tree = ast.parse(raw_string.strip(), mode=mode)
+            mode = 'exec' if re.search(r'(?<!=)=(?!=)', raw_string) else 'eval'
+            tree = ast.parse(raw_string, mode=mode)
             return self.ast_to_dict(tree)
         except Exception:
             return {"type": "raw", "value": raw_string}
 
     def parse_rule(self):
         rule_data = {"name": "", "condition": {}, "action": {}}
-        
+
         if self.current_token() and self.current_token().type == "RULE":
             self.advance()
             if self.current_token() and self.current_token().type == "IDENTIFIER":
@@ -86,7 +97,7 @@ class Parser:
                     rule_data["action"] = self.parse_logic_block(["WHEN", "RULE"])
                 else:
                     self.advance()
-                    
+
         return rule_data
 
     def parse(self):
