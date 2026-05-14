@@ -4,6 +4,7 @@ import sys
 import os
 from lexer import Lexer
 from parser import Parser
+from validate import Validator
 
 def main():
     arg_parser = argparse.ArgumentParser(description="RuleScript Compiler")
@@ -25,7 +26,9 @@ def main():
 
     parser = Parser(tokens)
     rules_data = parser.parse()
-
+    validator = Validator(rules_data, search_path=os.path.dirname(input_path))
+    if not validator.validate():
+        validator.report()  
     compiled_data = {
         "format": "rsc",
         "source": input_path,
@@ -35,6 +38,7 @@ def main():
     with open(output_path, 'w') as f:
         json.dump(compiled_data, f, indent=4)
         print(f"Compiled '{input_path}' to '{output_path}' successfully.")
+        sys.exit(0)
 
 if __name__ == "__main__":
     main()
