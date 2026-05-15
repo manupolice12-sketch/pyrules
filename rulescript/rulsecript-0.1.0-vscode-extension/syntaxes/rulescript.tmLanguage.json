@@ -22,7 +22,7 @@
                     "match": "\\b(rule|when|then)\\b"
                 },
                 {
-                    "name": "keyword.operator.rules",
+                    "name": "keyword.other.rules",
                     "match": "\\b(use|and|or)\\b"
                 }
             ]
