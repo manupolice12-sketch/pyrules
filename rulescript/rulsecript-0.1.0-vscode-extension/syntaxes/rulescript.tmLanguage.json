@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "name": "RuleScript",
     "scopeName": "source.rules",
-    "fileTypes": [".rules"],
+    "fileTypes": [".rules", ".rule"],
     "patterns": [
         { "include": "#comments" },
         { "include": "#keywords" },
