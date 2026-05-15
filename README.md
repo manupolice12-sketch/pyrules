@@ -1,141 +1,75 @@
-# pyrules
+# RuleScript & PyRules (v1.0.0)
 
-A lightweight gameplay scripting language and runtime for Python games.
-
-`pyrules` aims to provide a simple, readable, engine-agnostic scripting system that can be embedded into:
-- Pygame
-- pygame-ce
-- custom Python game engines
-- experimental game frameworks
-
-The project introduces:
-- `.rules` source files
-- a RuleScript-inspired syntax
-- a future `.rsc` compiled format
-- runtime object bindings
-- gameplay-focused scripting
+RuleScript is a domain-specific language (DSL) and compiler designed for high-performance, readable gameplay logic. It allows developers to write rules in a natural-language syntax, compile them into a validated Intermediate Representation (IR), and execute them against Python objects using the PyRules engine.
 
 ---
 
-# Example
+## PROJECT STATUS: VERSION 1.0.0 (STABLE)
 
-```rules
-use player
-
-rule low_health:
-    when player.hp < 20 and player.on_ground
-    then:
-        player.jump()
-```
+The project has transitioned from an early prototype to a structured compiler pipeline. It now features full semantic validation, type checking, and a decoupled runtime engine.
 
 ---
 
-# Goals
+## CORE ARCHITECTURE
 
-- Beginner-friendly syntax
-- Readable gameplay logic
-- Engine-independent design
-- Safe runtime execution
-- Modding support
-- Lightweight integration
-- Future bytecode/runtime support
 
----
 
-# Planned Architecture
+[Image of compiler architecture diagram]
 
-```text
-.rules
-    ↓
-Lexer
-    ↓
-Parser
-    ↓
-AST
-    ↓
-.rsc
-    ↓
-Runtime
-```
+
+The system operates in four distinct stages:
+
+1. SOURCE (.rules): Human-readable logic written in the RuleScript DSL.
+2. COMPILER (rulescript.py): Tokenizes (Lexer), structures (Parser), and checks (Validator) the logic.
+3. ARTIFACT (.rsc): A portable, optimized JSON representation of the rules.
+4. RUNTIME (pyrules.py): A lightweight engine that executes the .rsc files against live Python objects.
 
 ---
 
-# Project Status
+## KEY FEATURES
 
-Early prototype.
-
-Current focus:
-- lexer
-- parser
-- AST design
-- syntax experimentation
+- LEXICAL INTEGRITY: Tokenizer with column/line tracking for precise error reporting.
+- SEMANTIC VALIDATION: Enforces contracts via .var metadata files to catch errors before execution.
+- TYPE SAFETY: Supports v2.0 schema with type compatibility checking (e.g., int vs string).
+- READONLY PROTECTION: Prevents rules from modifying protected game variables.
+- LGPL v3 LICENSED: Open for use in commercial games while protecting engine improvements.
 
 ---
 
-# Syntax
+## EXAMPLE SYNTAX
 
-Current keywords:
-
-```text
-rule
-class
-func
-when
-then
-use
-and
-or
-```
-
-Current operators:
-
-```text
->
-<
-=
-==
-+
--
-*
-/
-```
+rule HighScoreAlert:
+    when Player.score > 1000 and Player.is_alive == true
+    then Player.trigger_effect("fireworks")
 
 ---
 
-# Example Runtime Integration
+## COMPILER USAGE
 
-```python
+To compile a rules file:
+$ python rulescript.py gameplay.rules
+
+This will perform:
+- Lexical analysis (Lexer)
+- AST generation and normalization (Parser)
+- Semantic contract enforcement (Validator)
+- JSON IR emission (Emitter)
+
+---
+
+## RUNTIME INTEGRATION
+
 from pyrules import RuleEngine
 
-engine = RuleEngine()
+# 1. Initialize engine with compiled rules
+engine = RuleEngine("gameplay.rsc", {"Player": player_instance})
 
-engine.export("player", player)
-engine.load("player.rules")
-```
-
----
-
-# Vision
-
-`pyrules` is intended to become:
-- a reusable gameplay scripting system
-- a standalone rules engine
-- a moddable scripting layer
-- an ecosystem tool usable beyond a single engine
+# 2. Run the engine in your game loop
+while game_running:
+    engine.tick()
 
 ---
 
-# License
+## LICENSE
 
-LGPL-3.0
-
----
-
-# Future Plans
-
-- `.rsc` compiled format
-- syntax highlighting
-- VS Code extension
-- hot reload support
-- debugger tooling
-- optional native runtime experimentation
+This project is licensed under the GNU Lesser General Public License v3 (LGPL-3.0). See LICENCE.txt for details.

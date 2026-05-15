@@ -11,35 +11,6 @@ class RuleEngine:
                 self.rules = data.get("rules", [])
         self.context = game_context if game_context else {}
 
-    def export(self, obj_name, obj, output_dir="."):
-        members = dir(obj)
-        public_members = [m for m in members if not m.startswith("_")]
-
-        attributes = []
-        methods = []
-
-        for name in public_members:
-            attr = getattr(obj, name)
-            if inspect.ismethod(attr) or inspect.isfunction(attr):
-                methods.append(name)
-            else:
-                attributes.append(name)
-
-        metadata = {
-            "name": obj_name,
-            "attributes": attributes,
-            "methods": methods
-        }
-
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-        file_path = os.path.join(output_dir, f"{obj_name}.var")
-        with open(file_path, "w") as f:
-            json.dump(metadata, f, indent=4)
-
-        return file_path
-
     def resolve(self, node):
         if not isinstance(node, dict):
             return node
@@ -59,23 +30,26 @@ class RuleEngine:
         elif node_type == "comparison":
             left = self.resolve(node.get("left"))
             right = self.resolve(node.get("right"))
-            op = node.get("operator")
-
+            op = node.get("operator") # Parser now uses 'operator'
             ops = {
-                "Lt": lambda a, b: a < b,
-                "Gt": lambda a, b: a > b,
-                "Eq": lambda a, b: a == b,
-                "NotEq": lambda a, b: a != b
+                "<":  lambda a, b: a < b,
+                ">":  lambda a, b: a > b,
+                "==": lambda a, b: a == b,
+                "!=": lambda a, b: a != b,
+                "<=": lambda a, b: a <= b,
+                ">=": lambda a, b: a >= b,
             }
             return ops[op](left, right) if op in ops else False
 
         elif node_type == "bool_op":
             values = [self.resolve(v) for v in node.get("values", [])]
-            return all(values) if node.get("operator") == "And" else any(values)
+            op = node.get("operator")
+            return all(values) if op == "and" else any(values)
 
         return None
 
     def apply(self, node):
+        """Executes actions based on the normalized IR."""
         if not node:
             return
         node_type = node.get("type")
@@ -87,12 +61,14 @@ class RuleEngine:
             setattr(obj, target_node.get("property"), new_val)
 
         elif node_type == "method_call":
-            target = self.resolve(node.get("func").get("object"))
-            method = getattr(target, node.get("func").get("property"))
+            func_node = node.get("func")
+            target = self.resolve(func_node.get("object"))
+            method = getattr(target, func_node.get("property"))
             args = [self.resolve(arg) for arg in node.get("args", [])]
             method(*args)
 
     def tick(self):
+        """Runs one cycle of the engine."""
         for rule in self.rules:
             if self.resolve(rule.get("condition")):
                 self.apply(rule.get("action"))
