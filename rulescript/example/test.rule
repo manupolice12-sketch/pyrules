@@ -20,4 +20,5 @@ rule game_over:
 rule score_bonus:
     when player.score > 100
     then:
-        player.speed = player.speed + 2
+        player.speed = player.speed + 2 
+    

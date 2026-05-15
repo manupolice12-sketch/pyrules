@@ -1,0 +1,25 @@
+{
+    "name": "rulescript",
+    "displayName": "RuleScript",
+    "description": "Syntax highlighting for RuleScript .rules files",
+    "version": "0.1.0",
+    "engines": { "vscode": "^1.60.0" },
+    "categories": ["Programming Languages"],
+    "contributes": {
+        "languages": [
+            {
+                "id": "rulescript",
+                "aliases": ["RuleScript", "rules"],
+                "extensions": [".rules"],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "rulescript",
+                "scopeName": "source.rules",
+                "path": "./syntaxes/rulescript.tmLanguage.json"
+            }
+        ]
+    }
+}
